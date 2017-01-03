@@ -25,9 +25,9 @@ defmodule AlphabetifyTest do
 
     File.write! Alphabetify.last_hash_file, "AAAZ" #prepare the file for testing
     assert "AABA" == Alphabetify.generate_hash
-  end
 
-  test "pop_last_member" do
-    assert [["Z","Y","X"],"W"] == Alphabetify.pop_last_member(["Z","Y","X","W"])
+    File.write! Alphabetify.last_hash_file, "AZZZZZZZZZ" #prepare the file for testing
+    assert "BAAAAAAAAA" == Alphabetify.generate_hash
+
   end
 end

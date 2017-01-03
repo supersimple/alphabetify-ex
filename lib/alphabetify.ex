@@ -72,12 +72,6 @@ defmodule Alphabetify do
     |> String.reverse
   end
 
-  def pop_last_member(enum) do
-    remaining_enum = Enum.slice(enum, 0..-2)
-    popped_value = Enum.at(enum, -1)
-    [remaining_enum, popped_value]
-  end
-
   def last_hash_file do
     if Mix.env == :test do
       "last-hash-test.txt"
