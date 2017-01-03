@@ -1,6 +1,10 @@
 # Alphabetify
+[![Build Status](https://semaphoreci.com/api/v1/supersimple/alphabetify-ex/branches/master/badge.svg)](https://semaphoreci.com/supersimple/alphabetify-ex)
 
-**TODO: Add description**
+    Create an alphabetical hash. Taking an existing alphabetic hash (of any length),
+    will return the next hash in sequence. If all characters in hash are rolled over,
+    will append a new char (increase the length by 1.)
+    eg. 'ZZZZ' -> 'AAAAA' eg. 'AAAZ' -> 'AABA'
 
 ## Installation
 

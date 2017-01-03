@@ -113,10 +113,9 @@ defmodule Alphabetify do
   end
 
   def last_hash_file do
-    if Mix.env == :test do
-      "last-hash-test.txt"
-    else
-      "last-hash.txt"
+    case Mix.env do
+      :test -> "last-hash-test.txt"
+      _ -> "last-hash.txt"
     end
   end
 
