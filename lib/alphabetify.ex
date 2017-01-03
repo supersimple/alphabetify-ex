@@ -5,7 +5,7 @@ defmodule Alphabetify do
   --------------------------
   Alphabetify is a module that generates sequential alphabetic hashes.
 
-  ## Usage
+  ## Use
   Before generating hashes, you should seed the module with your initial hash.
   By default, the module will begin at 'AAAA'.
   To use a different initial hash, call the `seed_hash/1` function. Example: `Alphabetify.seed_hash("AAAAAA")`.
