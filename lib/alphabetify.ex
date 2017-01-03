@@ -1,5 +1,22 @@
 defmodule Alphabetify do
 
+  @moduledoc """
+  Alphabetify
+  --------------------------
+  Alphabetify is a module that generates sequential alphabetic hashes.
+
+  ## Usage
+  Before generating hashes, you should seed the module with your initial hash.
+  By default, the module will begin at 'AAAA'.
+  To use a different initial hash, call the `seed_hash/1` function. Example: `Alphabetify.seed_hash("AAAAAA")`.
+
+  Each time you want to get the next available hash, call `generate_hash/0`. Example: `Alphabetify.generate_hash`.
+  That function will advance the hash and persist it, then return the new hash.
+
+  The hash will append new characters when required.
+  Examples: `'ZZZZ' -> 'AAAAA'` and `'AAAZ' -> 'AABA'`
+  """
+
   @hash_chars String.split("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "", trim: true) # builds an array with each character
 
   def generate_hash do
