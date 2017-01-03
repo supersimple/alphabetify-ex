@@ -9,6 +9,8 @@ defmodule Alphabetify.Mixfile do
      start_permanent: Mix.env == :prod,
      description: description(),
      package: package(),
+     source_url: "https://github.com/supersimple/alphabetify-ex",
+     summary: description(),
      deps: deps()]
   end
 
@@ -20,7 +22,7 @@ defmodule Alphabetify.Mixfile do
   end
 
   defp deps do
-    []
+    [{:ex_doc, ">= 0.0.0", only: :dev}]
   end
 
   defp description do
