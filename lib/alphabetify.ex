@@ -18,6 +18,14 @@ defmodule Alphabetify do
 
   @hash_chars String.split("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "", trim: true) # builds an array with each character
 
+  @doc """
+  This generates the next hash in the sequence.
+
+  ## Examples
+    iex> Alphabetify.generate_hash
+    "AAAB"
+  """
+
   def generate_hash do
     if Enum.uniq(String.split(last_hash, "", trim: true)) == [List.last(@hash_chars)] do
       rollover_hash(last_hash)
@@ -25,6 +33,14 @@ defmodule Alphabetify do
       advance_hash(last_hash)
     end
   end
+
+  @doc """
+  This sets the initial value in the hash sequence.
+
+  ## Examples
+    iex> Alphabetify.seed_hash("AAAA")
+    "AAAA"
+  """
 
   def seed_hash(seed) do
     if String.length(seed) == 0, do: raise ArgumentError, message: "The seed cannot be empty"
@@ -36,6 +52,14 @@ defmodule Alphabetify do
     end
   end
 
+  @doc """
+  This gets the last hash used.
+
+  ## Examples
+    iex> Alphabetify.last_hash
+    "AAAA"
+  """
+
   def last_hash do
     File.read!(last_hash_file)
   end
@@ -44,7 +68,7 @@ defmodule Alphabetify do
     File.write! last_hash_file, str
   end
 
-  def get_next_char(char) do
+  defp get_next_char(char) do
     unless char == List.last(@hash_chars) do
       next_char = Enum.find_index(@hash_chars, fn(x) -> x == char end)
       |> Kernel.+(1)

@@ -11,11 +11,6 @@ defmodule AlphabetifyTest do
     assert "AAAA" == Alphabetify.last_hash
   end
 
-  test "get next char" do
-    assert "D" == Alphabetify.get_next_char "C"
-    assert "A" == Alphabetify.get_next_char "Z"
-  end
-
   test "generate hash" do
     File.write! Alphabetify.last_hash_file, "ZZZZ" #prepare the file for testing
     assert "AAAAA" == Alphabetify.generate_hash
