@@ -35,7 +35,7 @@ defmodule Alphabetify.Mixfile do
   defp package do
     [# These are the default files included in the package
      name: :alphabetify,
-     files: ["lib", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
+     files: ["lib", "mix.exs", "README*", "LICENSE*"],
      maintainers: ["Todd Resudek"],
      licenses: ["GPL 3.0"],
      links: %{"GitHub" => "https://github.com/supersimple/alphabetify-ex"}

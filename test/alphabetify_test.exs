@@ -28,6 +28,6 @@ defmodule AlphabetifyTest do
 
     File.write! Alphabetify.last_hash_file, "AZZZZZZZZZ" #prepare the file for testing
     assert "BAAAAAAAAA" == Alphabetify.generate_hash
-
   end
+
 end
