@@ -15,9 +15,8 @@ defmodule Alphabetify do
   The hash will append new characters when required.
   Examples: `'ZZZZ' -> 'AAAAA'` and `'AAAZ' -> 'AABA'`
   """
-
-  @hash_chars String.split("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "", trim: true) # builds an array with each character
-
+  # TODO: Has to be a better way
+  @hash_chars ?A..?Z |> Enum.map(fn(ch) -> <<ch>> end)
   @doc """
   This generates the next hash in the sequence.
 
@@ -27,10 +26,12 @@ defmodule Alphabetify do
   """
 
   def generate_hash do
-    if Enum.uniq(String.split(last_hash, "", trim: true)) == [List.last(@hash_chars)] do
-      rollover_hash(last_hash)
+    if Enum.uniq(String.split(last_hash(), "", trim: true)) == [List.last(@hash_chars)] do
+      last_hash()
+      |> rollover_hash()
     else
-      advance_hash(last_hash)
+      last_hash()
+      |> advance_hash()
     end
   end
 
@@ -46,7 +47,7 @@ defmodule Alphabetify do
     if String.length(seed) == 0, do: raise ArgumentError, message: "The seed cannot be empty"
     if Enum.all?(String.split(seed, "", trim: true), fn(ch) -> Enum.member?(@hash_chars, ch) end) do
       last_hash(seed)
-      last_hash
+      last_hash()
     else
       raise ArgumentError, message: "The seed can only contain characters in #{List.to_string(@hash_chars)}"
     end
@@ -61,11 +62,17 @@ defmodule Alphabetify do
   """
 
   def last_hash do
-    File.read!(last_hash_file)
+    {:ok, table} = last_hash_table |> :dets.open_file([type: :set])
+    ret = :dets.lookup(table, :last_hash) |> Keyword.get(:last_hash, "AAAA")
+    :dets.close(table)
+    ret
   end
 
   defp last_hash(str) do
-    File.write! last_hash_file, str
+    {:ok, table} = last_hash_table |> :dets.open_file([type: :set])
+    ret = :dets.insert(table, {:last_hash, str})
+    :dets.close(table)
+    ret
   end
 
   defp get_next_char(char) do
@@ -112,11 +119,10 @@ defmodule Alphabetify do
     |> String.reverse
   end
 
-  def last_hash_file do
+  def last_hash_table do
     case Mix.env do
-      :test -> "last-hash-test.txt"
-      _ -> "last-hash.txt"
+      :test -> :alphabetify_disk_test_store
+      _ -> :alphabetify_disk_store
     end
   end
-
 end

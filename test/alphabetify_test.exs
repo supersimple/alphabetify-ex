@@ -7,22 +7,38 @@ defmodule AlphabetifyTest do
   end
 
   test "the last hash returns the hash" do
-    File.write! Alphabetify.last_hash_file, "AAAA" #prepare the file for testing
-    assert "AAAA" == Alphabetify.last_hash
+    {:ok, table} = :dets.open_file(:alphabetify_disk_test_store, [type: :set])
+    :dets.insert(table, {:last_hash, "AAAA"})
+    :dets.close(:alphabetify_disk_test_store)
+    assert "AAAA" == Alphabetify.last_hash()
   end
 
-  test "generate hash" do
-    File.write! Alphabetify.last_hash_file, "ZZZZ" #prepare the file for testing
-    assert "AAAAA" == Alphabetify.generate_hash
+  test "generate hash from AAAA" do
+    {:ok, table} = :dets.open_file(:alphabetify_disk_test_store, [type: :set])
+    :dets.insert(table, {:last_hash, "AAAA"})
+    :dets.close(:alphabetify_disk_test_store)
+    assert "AAAB" == Alphabetify.generate_hash()
+  end
 
-    File.write! Alphabetify.last_hash_file, "AAAA" #prepare the file for testing
-    assert "AAAB" == Alphabetify.generate_hash
+  test "generate hash from ZZZZ" do
+    {:ok, table} = :dets.open_file(:alphabetify_disk_test_store, [type: :set])
+    :dets.insert(table, {:last_hash, "ZZZZ"})
+    :dets.close(:alphabetify_disk_test_store)
+    assert "AAAAA" == Alphabetify.generate_hash()
+  end
 
-    File.write! Alphabetify.last_hash_file, "AAAZ" #prepare the file for testing
-    assert "AABA" == Alphabetify.generate_hash
+  test "generate hash from AAAZ" do
+    {:ok, table} = :dets.open_file(:alphabetify_disk_test_store, [type: :set])
+    :dets.insert(table, {:last_hash, "AAAZ"})
+    :dets.close(:alphabetify_disk_test_store)
+    assert "AABA" == Alphabetify.generate_hash()
+  end
 
-    File.write! Alphabetify.last_hash_file, "AZZZZZZZZZ" #prepare the file for testing
-    assert "BAAAAAAAAA" == Alphabetify.generate_hash
+  test "generate hash from AZZZZZZZZ" do
+    {:ok, table} = :dets.open_file(:alphabetify_disk_test_store, [type: :set])
+    :dets.insert(table, {:last_hash, "AZZZZZZZZZ"})
+    :dets.close(:alphabetify_disk_test_store)
+    assert "BAAAAAAAAA" == Alphabetify.generate_hash()
   end
 
 end
