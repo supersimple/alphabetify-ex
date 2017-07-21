@@ -14,7 +14,7 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
     ```elixir
     def deps do
-      [{:alphabetify, "~> 0.1.0"}]
+      [{:alphabetify, "~> 1.0.0"}]
     end
     ```
 
@@ -26,3 +26,5 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
     end
     ```
 
+## Important
+Version 1.0.0 uses dets to store the hash. If you are upgrading from an earlier version, you will want to seed your hash again to transfer your last used hash to the new data store.
