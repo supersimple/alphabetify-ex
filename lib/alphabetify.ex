@@ -15,14 +15,10 @@ defmodule Alphabetify do
   The hash will append new characters when required.
   Examples: `'ZZZZ' -> 'AAAAA'` and `'AAAZ' -> 'AABA'`
   """
-  # TODO: Has to be a better way
+
   @hash_chars ?A..?Z |> Enum.map(fn(ch) -> <<ch>> end)
   @doc """
   This generates the next hash in the sequence.
-
-  ## Examples
-    iex> Alphabetify.generate_hash
-    "AAAB"
   """
 
   def generate_hash do
@@ -37,10 +33,6 @@ defmodule Alphabetify do
 
   @doc """
   This sets the initial value in the hash sequence.
-
-  ## Examples
-    iex> Alphabetify.seed_hash("AAAA")
-    "AAAA"
   """
 
   def seed_hash(seed) do
@@ -55,21 +47,17 @@ defmodule Alphabetify do
 
   @doc """
   This gets the last hash used.
-
-  ## Examples
-    iex> Alphabetify.last_hash
-    "AAAA"
   """
 
   def last_hash do
-    {:ok, table} = last_hash_table |> :dets.open_file([type: :set])
+    {:ok, table} = last_hash_table() |> :dets.open_file([type: :set])
     ret = :dets.lookup(table, :last_hash) |> Keyword.get(:last_hash, "AAAA")
     :dets.close(table)
     ret
   end
 
-  defp last_hash(str) do
-    {:ok, table} = last_hash_table |> :dets.open_file([type: :set])
+  def last_hash(str) do
+    {:ok, table} = last_hash_table() |> :dets.open_file([type: :set])
     ret = :dets.insert(table, {:last_hash, str})
     :dets.close(table)
     ret
