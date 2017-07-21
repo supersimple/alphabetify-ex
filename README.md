@@ -12,19 +12,19 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 
   1. Add `alphabetify` to your list of dependencies in `mix.exs`:
 
-    ```elixir
+    elixir
     def deps do
       [{:alphabetify, "~> 1.0.0"}]
     end
-    ```
+    
 
   2. Ensure `alphabetify` is started before your application:
 
-    ```elixir
+    elixir
     def application do
       [applications: [:alphabetify]]
     end
-    ```
+    
 
 ## Important
 Version 1.0.0 uses dets to store the hash. If you are upgrading from an earlier version, you will want to seed your hash again to transfer your last used hash to the new data store.
