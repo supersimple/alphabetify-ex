@@ -7,27 +7,27 @@ defmodule AlphabetifyTest do
   end
 
   test "the last hash returns the hash" do
-    Alphabetify.last_hash("ACDC")
+    Alphabetify.seed_hash("ACDC")
     assert "ACDC" == Alphabetify.last_hash()
   end
 
   test "generate hash from AAA" do
-    Alphabetify.last_hash("AAA")
+    Alphabetify.seed_hash("AAA")
     assert "AAB" == Alphabetify.generate_hash()
   end
 
   test "generate hash from ZZZZ" do
-    Alphabetify.last_hash("ZZZZ")
+    Alphabetify.seed_hash("ZZZZ")
     assert "AAAAA" == Alphabetify.generate_hash()
   end
 
   test "generate hash from AAAZ" do
-    Alphabetify.last_hash("AAAZ")
+    Alphabetify.seed_hash("AAAZ")
     assert "AABA" == Alphabetify.generate_hash()
   end
 
   test "generate hash from AZZZZZZZZ" do
-    Alphabetify.last_hash("AZZZZZZZZZ")
+    Alphabetify.seed_hash("AZZZZZZZZZ")
     assert "BAAAAAAAAA" == Alphabetify.generate_hash()
   end
 end

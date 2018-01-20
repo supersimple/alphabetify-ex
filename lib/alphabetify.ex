@@ -19,6 +19,12 @@ defmodule Alphabetify do
   @hash_chars ?A..?Z |> Enum.map(fn(ch) -> <<ch>> end)
   @doc """
   This generates the next hash in the sequence.
+
+  ## Examples
+    iex> Alphabetify.seed_hash("AAAA")
+    iex> Alphabetify.generate_hash
+    "AAAB"
+
   """
 
   def generate_hash do
@@ -33,6 +39,11 @@ defmodule Alphabetify do
 
   @doc """
   This sets the initial value in the hash sequence.
+
+  ## Examples
+    iex> Alphabetify.seed_hash("BBBB")
+    "BBBB"
+
   """
 
   def seed_hash(seed) do
@@ -47,6 +58,11 @@ defmodule Alphabetify do
 
   @doc """
   This gets the last hash used.
+
+  ## Examples
+    iex> Alphabetify.seed_hash("ABCD")
+    iex> Alphabetify.last_hash
+    "ABCD"
   """
 
   def last_hash do
@@ -56,7 +72,7 @@ defmodule Alphabetify do
     ret
   end
 
-  def last_hash(str) do
+  defp last_hash(str) do
     {:ok, table} = last_hash_table() |> :dets.open_file([type: :set])
     ret = :dets.insert(table, {:last_hash, str})
     :dets.close(table)
@@ -81,8 +97,10 @@ defmodule Alphabetify do
   defp rollover_hash(hash) do
     # when all chars == the last char in the @hash_chars list
     # roll it over and add one char (eg. ZZZ -> AAAA)
-    List.first(@hash_chars)
-    |> String.duplicate(String.length(hash) + 1)
+    new_hash = List.first(@hash_chars)
+               |> String.duplicate(String.length(hash) + 1)
+    last_hash(new_hash)
+    new_hash
   end
 
   defp advance_hash(last_hash) do
@@ -101,11 +119,21 @@ defmodule Alphabetify do
     advanced_char = Tuple.to_list(parts) |> List.last |> List.first |> get_next_char
     unchanged_hash = Tuple.to_list(parts) |> List.last |> Enum.slice(1..-1)
 
-    Enum.concat(rolled_hash, [advanced_char])
-    |> Enum.concat(unchanged_hash)
-    |> Enum.join
-    |> String.reverse
+    new_hash = Enum.concat(rolled_hash, [advanced_char])
+               |> Enum.concat(unchanged_hash)
+               |> Enum.join
+               |> String.reverse
+    last_hash(new_hash)
+    new_hash
   end
+
+  @doc """
+  Returns the table name used for the current environment
+
+  ## Examples
+    iex> Alphabetify.last_hash_table()
+    :alphabetify_disk_test_store
+  """
 
   def last_hash_table do
     case Mix.env do

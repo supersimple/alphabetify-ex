@@ -3,8 +3,8 @@ defmodule Alphabetify.Mixfile do
 
   def project do
     [app: :alphabetify,
-     version: "1.0.0",
-     elixir: "~> 1.3",
+     version: "1.0.2",
+     elixir: "~> 1.5",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      description: description(),
