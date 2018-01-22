@@ -1,5 +1,4 @@
 defmodule Alphabetify do
-
   @moduledoc """
   Alphabetify
   --------------------------
@@ -16,7 +15,7 @@ defmodule Alphabetify do
   Examples: `'ZZZZ' -> 'AAAAA'` and `'AAAZ' -> 'AABA'`
   """
 
-  @hash_chars ?A..?Z |> Enum.map(fn(ch) -> <<ch>> end)
+  @hash_chars ?A..?Z |> Enum.map(fn ch -> <<ch>> end)
   @doc """
   This generates the next hash in the sequence.
 
@@ -47,12 +46,14 @@ defmodule Alphabetify do
   """
 
   def seed_hash(seed) do
-    if String.length(seed) == 0, do: raise ArgumentError, message: "The seed cannot be empty"
-    if Enum.all?(String.split(seed, "", trim: true), fn(ch) -> Enum.member?(@hash_chars, ch) end) do
+    if String.length(seed) == 0, do: raise(ArgumentError, message: "The seed cannot be empty")
+
+    if Enum.all?(String.split(seed, "", trim: true), fn ch -> Enum.member?(@hash_chars, ch) end) do
       last_hash(seed)
       last_hash()
     else
-      raise ArgumentError, message: "The seed can only contain characters in #{List.to_string(@hash_chars)}"
+      raise ArgumentError,
+        message: "The seed can only contain characters in #{List.to_string(@hash_chars)}"
     end
   end
 
@@ -66,14 +67,14 @@ defmodule Alphabetify do
   """
 
   def last_hash do
-    {:ok, table} = last_hash_table() |> :dets.open_file([type: :set])
+    {:ok, table} = last_hash_table() |> :dets.open_file(type: :set)
     ret = :dets.lookup(table, :last_hash) |> Keyword.get(:last_hash, "AAAA")
     :dets.close(table)
     ret
   end
 
   defp last_hash(str) do
-    {:ok, table} = last_hash_table() |> :dets.open_file([type: :set])
+    {:ok, table} = last_hash_table() |> :dets.open_file(type: :set)
     ret = :dets.insert(table, {:last_hash, str})
     :dets.close(table)
     ret
@@ -81,9 +82,11 @@ defmodule Alphabetify do
 
   defp get_next_char(char) do
     unless char == List.last(@hash_chars) do
-      next_char = Enum.find_index(@hash_chars, fn(x) -> x == char end)
-      |> Kernel.+(1)
-      |> char_at
+      next_char =
+        Enum.find_index(@hash_chars, fn x -> x == char end)
+        |> Kernel.+(1)
+        |> char_at
+
       next_char
     else
       List.first(@hash_chars)
@@ -97,8 +100,10 @@ defmodule Alphabetify do
   defp rollover_hash(hash) do
     # when all chars == the last char in the @hash_chars list
     # roll it over and add one char (eg. ZZZ -> AAAA)
-    new_hash = List.first(@hash_chars)
-               |> String.duplicate(String.length(hash) + 1)
+    new_hash =
+      List.first(@hash_chars)
+      |> String.duplicate(String.length(hash) + 1)
+
     last_hash(new_hash)
     new_hash
   end
@@ -110,19 +115,22 @@ defmodule Alphabetify do
     # return the new string
     # eg. AAZZ -> ABAA
     # eg. AADZ -> AAEA
-    reversed_hash = String.reverse(last_hash)
-    |> String.split("", trim: true)
+    reversed_hash =
+      String.reverse(last_hash)
+      |> String.split("", trim: true)
 
-    parts = Enum.split_while(reversed_hash, fn(ch) -> ch == List.last(@hash_chars) end)
+    parts = Enum.split_while(reversed_hash, fn ch -> ch == List.last(@hash_chars) end)
 
-    rolled_hash = Tuple.to_list(parts) |> List.first |> Enum.map(fn(ch) -> get_next_char(ch) end)
-    advanced_char = Tuple.to_list(parts) |> List.last |> List.first |> get_next_char
-    unchanged_hash = Tuple.to_list(parts) |> List.last |> Enum.slice(1..-1)
+    rolled_hash = Tuple.to_list(parts) |> List.first() |> Enum.map(fn ch -> get_next_char(ch) end)
+    advanced_char = Tuple.to_list(parts) |> List.last() |> List.first() |> get_next_char
+    unchanged_hash = Tuple.to_list(parts) |> List.last() |> Enum.slice(1..-1)
 
-    new_hash = Enum.concat(rolled_hash, [advanced_char])
-               |> Enum.concat(unchanged_hash)
-               |> Enum.join
-               |> String.reverse
+    new_hash =
+      Enum.concat(rolled_hash, [advanced_char])
+      |> Enum.concat(unchanged_hash)
+      |> Enum.join()
+      |> String.reverse()
+
     last_hash(new_hash)
     new_hash
   end
@@ -136,7 +144,7 @@ defmodule Alphabetify do
   """
 
   def last_hash_table do
-    case Mix.env do
+    case Mix.env() do
       :test -> :alphabetify_disk_test_store
       _ -> :alphabetify_disk_store
     end
