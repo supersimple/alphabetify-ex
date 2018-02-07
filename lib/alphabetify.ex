@@ -121,9 +121,9 @@ defmodule Alphabetify do
 
     parts = Enum.split_while(reversed_hash, fn ch -> ch == List.last(@hash_chars) end)
 
-    rolled_hash = Tuple.to_list(parts) |> List.first() |> Enum.map(fn ch -> get_next_char(ch) end)
-    advanced_char = Tuple.to_list(parts) |> List.last() |> List.first() |> get_next_char
-    unchanged_hash = Tuple.to_list(parts) |> List.last() |> Enum.slice(1..-1)
+    rolled_hash = rolled_hash(parts)
+    advanced_char = advanced_char(parts)
+    unchanged_hash = unchanged_hash(parts)
 
     new_hash =
       Enum.concat(rolled_hash, [advanced_char])
@@ -133,6 +133,28 @@ defmodule Alphabetify do
 
     last_hash(new_hash)
     new_hash
+  end
+
+  defp rolled_hash(parts) do
+    parts
+    |> Tuple.to_list
+    |> List.first
+    |> Enum.map(fn ch -> get_next_char(ch) end)
+  end
+
+  defp advanced_char(parts) do
+    parts
+    |> Tuple.to_list
+    |> List.last
+    |> List.first
+    |> get_next_char
+  end
+
+  defp unchanged_hash(parts) do
+    parts
+    |> Tuple.to_list
+    |> List.last
+    |> Enum.slice(1..-1)
   end
 
   @doc """
