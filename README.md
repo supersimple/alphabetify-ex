@@ -8,7 +8,7 @@
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
+The package can be installed as:
 
   1. Add `alphabetify` to your list of dependencies in `mix.exs`:
 
@@ -16,15 +16,7 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
     def deps do
       [{:alphabetify, "~> 1.0.0"}]
     end
-    
 
-  2. Ensure `alphabetify` is started before your application:
-
-    elixir
-    def application do
-      [applications: [:alphabetify]]
-    end
-    
 
 ## Important
-Version 1.0.0 uses dets to store the hash. If you are upgrading from an earlier version, you will want to seed your hash again to transfer your last used hash to the new data store.
+Version 1.0.0 uses DETS to store the hash. If you are upgrading from an earlier version, you will want to seed your hash again to transfer your last used hash to the new data store.

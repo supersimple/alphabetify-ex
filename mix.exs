@@ -2,14 +2,16 @@ defmodule Alphabetify.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :alphabetify,
-     version: "1.0.4",
-     elixir: "~> 1.5",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     description: description(),
-     package: package(),
-     deps: deps()]
+    [
+      app: :alphabetify,
+      version: "1.0.8",
+      elixir: "~> 1.5",
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      description: description(),
+      package: package(),
+      deps: deps()
+    ]
   end
 
   # Configuration for the OTP application
@@ -33,12 +35,13 @@ defmodule Alphabetify.Mixfile do
   end
 
   defp package do
-    [# These are the default files included in the package
-     name: :alphabetify,
-     files: ["lib", "mix.exs", "README*", "LICENSE*"],
-     maintainers: ["Todd Resudek"],
-     licenses: ["GPL 3.0"],
-     links: %{"GitHub" => "https://github.com/supersimple/alphabetify-ex"}
-   ]
+    # These are the default files included in the package
+    [
+      name: :alphabetify,
+      files: ["lib", "mix.exs", "README*", "LICENSE*"],
+      maintainers: ["Todd Resudek"],
+      licenses: ["GPL 3.0"],
+      links: %{"GitHub" => "https://github.com/supersimple/alphabetify-ex"}
+    ]
   end
 end
