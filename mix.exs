@@ -4,7 +4,7 @@ defmodule Alphabetify.Mixfile do
   def project do
     [
       app: :alphabetify,
-      version: "1.0.8",
+      version: "1.0.9",
       elixir: "~> 1.5",
       build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
