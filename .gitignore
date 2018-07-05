@@ -17,4 +17,5 @@ erl_crash.dump
 *.ez
 
 /.tool-versions
+.tool-versions
 alphabetify_disk_test_store
