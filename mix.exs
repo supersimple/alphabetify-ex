@@ -10,7 +10,8 @@ defmodule Alphabetify.Mixfile do
       start_permanent: Mix.env() == :prod,
       description: description(),
       package: package(),
-      deps: deps()
+      deps: deps(),
+      docs: [logo: "alpha.png"]
     ]
   end
 
@@ -41,7 +42,8 @@ defmodule Alphabetify.Mixfile do
       files: ["lib", "mix.exs", "README*", "LICENSE*"],
       maintainers: ["Todd Resudek"],
       licenses: ["GPL 3.0"],
-      links: %{"GitHub" => "https://github.com/supersimple/alphabetify-ex"}
+      links: %{"GitHub" => "https://github.com/supersimple/alphabetify-ex"},
+      logo: "e.png"
     ]
   end
 end
