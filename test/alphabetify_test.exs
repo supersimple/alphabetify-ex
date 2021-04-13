@@ -30,4 +30,9 @@ defmodule AlphabetifyTest do
     Alphabetify.seed_hash("AZZZZZZZZZ")
     assert "BAAAAAAAAA" == Alphabetify.generate_hash()
   end
+
+  test "fail on invalid seed @ZZZZZZZZ" do
+    assert catch_error Alphabetify.seed_hash("@ZZZZZZZZZ") == ArgumentError
+    assert catch_error Alphabetify.seed_hash("AZZZZZZZZ@") == ArgumentError
+  end
 end
