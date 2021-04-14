@@ -21,17 +21,19 @@ defmodule Alphabetify do
   @hash_chars chars |> Enum.reverse() |> Enum.map(fn ch -> <<ch>> end)
 
   for ch <- rest do
-    defp get_next_char(unquote(ch)), do: unquote(ch) + 1
+    defp increase_next_char(unquote(ch)), do: unquote(ch) + 1
   end
 
-  defp get_next_char(@last_char), do: @first_char
-
-  def hash_chars, do: @hash_chars
+  defp increase_next_char(@last_char), do: @first_char
 
   @doc """
   This generates the next hash in the sequence.
 
   ## Examples
+      iex> Alphabetify.generate_hash("AAAA")
+      "AAAB"
+      iex> Alphabetify.generate_hash("ZZZ")
+      "AAAA"
       iex> Alphabetify.seed_hash("AAAA")
       iex> Alphabetify.generate_hash
       "AAAB"
@@ -42,24 +44,23 @@ defmodule Alphabetify do
   def generate_hash, do: generate_hash(last_hash())
 
   def generate_hash(last_hash) do
-  # Advance the last character
-  # If that char had to rollover, advance the next to last character
-  # repeat if necessary
-  # return the new string
-  # eg. AAZZ -> ABAA
-  # eg. AADZ -> AAEA
     reversed_hash = String.reverse(last_hash)
 
-    {maybe_rollover, charlist} =
-      for <<char <- reversed_hash>>, reduce: {true, []} do
-        {rollover, previous_charlist} ->
-          rollover_next = char == @last_char
-          current_char = if rollover, do: get_next_char(char), else: char
-          {rollover_next, [current_char | previous_charlist]}
+    {add_A?, charlist} =
+      for <<current_char <- reversed_hash>>, reduce: {true, []} do
+        {increase_next_char?, charlist_tail} ->
+          next_char =
+            if increase_next_char? do
+              increase_next_char(current_char)
+            else
+              current_char
+            end
+
+          {current_char == @last_char, [next_char | charlist_tail]}
       end
 
     new_hash =
-      if maybe_rollover,
+      if add_A?,
         do: [@first_char | charlist],
         else: charlist
 
