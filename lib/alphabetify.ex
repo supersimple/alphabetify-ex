@@ -15,11 +15,25 @@ defmodule Alphabetify do
   Examples: `'ZZZZ' -> 'AAAAA'` and `'AAAZ' -> 'AABA'`
   """
 
-  @hash_chars ?A..?Z |> Enum.map(fn ch -> <<ch>> end)
+  @first_char ?A
+  @last_char ?Z
+  [_last_char | rest] = chars = Enum.to_list(@last_char..@first_char)
+  @hash_chars chars |> Enum.reverse() |> Enum.map(fn ch -> <<ch>> end)
+
+  for ch <- rest do
+    defp increase_next_char(unquote(ch)), do: unquote(ch) + 1
+  end
+
+  defp increase_next_char(@last_char), do: @first_char
+
   @doc """
   This generates the next hash in the sequence.
 
   ## Examples
+      iex> Alphabetify.generate_hash("AAAA")
+      "AAAB"
+      iex> Alphabetify.generate_hash("ZZZ")
+      "AAAA"
       iex> Alphabetify.seed_hash("AAAA")
       iex> Alphabetify.generate_hash
       "AAAB"
@@ -27,14 +41,33 @@ defmodule Alphabetify do
 
   @spec generate_hash() :: String.t()
 
-  def generate_hash do
-    if Enum.uniq(String.split(last_hash(), "", trim: true)) == [List.last(@hash_chars)] do
-      last_hash()
-      |> rollover_hash()
-    else
-      last_hash()
-      |> advance_hash()
-    end
+  def generate_hash, do: generate_hash(last_hash())
+
+  def generate_hash(last_hash) do
+    reversed_hash = String.reverse(last_hash)
+
+    {add_A?, charlist} =
+      for <<current_char <- reversed_hash>>, reduce: {true, []} do
+        {increase_next_char?, charlist_tail} ->
+          next_char =
+            if increase_next_char? do
+              increase_next_char(current_char)
+            else
+              current_char
+            end
+
+          {current_char == @last_char, [next_char | charlist_tail]}
+      end
+
+    new_hash =
+      if add_A?,
+        do: [@first_char | charlist],
+        else: charlist
+
+    new_hash = List.to_string(new_hash)
+
+    last_hash(new_hash)
+    new_hash
   end
 
   @doc """
@@ -50,13 +83,13 @@ defmodule Alphabetify do
   def seed_hash(seed) do
     if String.length(seed) == 0, do: raise(ArgumentError, message: "The seed cannot be empty")
 
-    if Enum.all?(String.split(seed, "", trim: true), fn ch -> Enum.member?(@hash_chars, ch) end) do
-      last_hash(seed)
-      last_hash()
-    else
+    for <<str <- seed>>, str < @first_char or str > @last_char do
       raise ArgumentError,
         message: "The seed can only contain characters in #{List.to_string(@hash_chars)}"
     end
+
+    last_hash(seed)
+    last_hash()
   end
 
   @doc """
@@ -69,7 +102,6 @@ defmodule Alphabetify do
   """
 
   @spec last_hash() :: String.t()
-
   def last_hash do
     {:ok, table} = last_hash_table() |> :dets.open_file(type: :set)
     ret = :dets.lookup(table, :last_hash) |> Keyword.get(:last_hash, "AAAA")
@@ -77,88 +109,12 @@ defmodule Alphabetify do
     ret
   end
 
+  @spec last_hash(String.t()) :: String.t()
   defp last_hash(str) do
     {:ok, table} = last_hash_table() |> :dets.open_file(type: :set)
     ret = :dets.insert(table, {:last_hash, str})
     :dets.close(table)
     ret
-  end
-
-  defp get_next_char(char) do
-    unless char == List.last(@hash_chars) do
-      next_char =
-        Enum.find_index(@hash_chars, fn x -> x == char end)
-        |> Kernel.+(1)
-        |> char_at
-
-      next_char
-    else
-      List.first(@hash_chars)
-    end
-  end
-
-  defp char_at(position) do
-    Enum.at(@hash_chars, position)
-  end
-
-  defp rollover_hash(hash) do
-    # when all chars == the last char in the @hash_chars list
-    # roll it over and add one char (eg. ZZZ -> AAAA)
-    new_hash =
-      List.first(@hash_chars)
-      |> String.duplicate(String.length(hash) + 1)
-
-    last_hash(new_hash)
-    new_hash
-  end
-
-  defp advance_hash(last_hash) do
-    # Advance the last character
-    # If that char had to rollover, advance the next to last character
-    # repeat if necessary
-    # return the new string
-    # eg. AAZZ -> ABAA
-    # eg. AADZ -> AAEA
-    reversed_hash =
-      String.reverse(last_hash)
-      |> String.split("", trim: true)
-
-    parts = Enum.split_while(reversed_hash, fn ch -> ch == List.last(@hash_chars) end)
-
-    rolled_hash = rolled_hash(parts)
-    advanced_char = advanced_char(parts)
-    unchanged_hash = unchanged_hash(parts)
-
-    new_hash =
-      Enum.concat(rolled_hash, [advanced_char])
-      |> Enum.concat(unchanged_hash)
-      |> Enum.join()
-      |> String.reverse()
-
-    last_hash(new_hash)
-    new_hash
-  end
-
-  defp rolled_hash(parts) do
-    parts
-    |> Tuple.to_list()
-    |> List.first()
-    |> Enum.map(fn ch -> get_next_char(ch) end)
-  end
-
-  defp advanced_char(parts) do
-    parts
-    |> Tuple.to_list()
-    |> List.last()
-    |> List.first()
-    |> get_next_char
-  end
-
-  defp unchanged_hash(parts) do
-    parts
-    |> Tuple.to_list()
-    |> List.last()
-    |> Enum.slice(1..-1)
   end
 
   @doc """
@@ -168,9 +124,7 @@ defmodule Alphabetify do
       iex> Alphabetify.last_hash_table()
       :alphabetify_disk_test_store
   """
-
   @spec last_hash_table() :: atom
-
   def last_hash_table do
     case Mix.env() do
       :test -> :alphabetify_disk_test_store
